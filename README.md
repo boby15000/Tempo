@@ -47,7 +47,7 @@ void setup() {
 String message;
 
 void loop() {
-
+  // Si IsEnd() utilisé pas necessaire d'utiliser Update()
   if ( Minuterie.IsEnd() )
   { message = "Compteur 5s terminé"; }
   else
@@ -64,10 +64,12 @@ void loop() {
 
 | Méthode                       | Description |
 |-------------------------------|-------------|
-| `Start(valeur, unité, auto)`  | Démarre la temporisation. |
-| `IsEnd()`                     | À appeler régulièrement dans `loop()` pour que la tempo fonctionne. |
+| `Start(valeur, unité, autoRestart)`  | Démarre la temporisation. |
+| `Update()`                    | À appeler régulièrement dans `loop()` pour que la tempo fonctionne *(Inutile si IsEnd() ou GetTime() utilisé)*. |
 | `OnEnd(callback)`             | Définit une fonction à appeler à la fin de la Tempo. |
 | `IsRunning()`                 | Renvoie `true` si la tempo est en cours. |
+| `IsEnd()`                     | Renvoie `true` si la tempo est en terminé. |
+| `GetTime()`                   | Renvoie le temps restant en Millis ou Micro selon l'unité utilisé. |
 | `Stop()`                      | Arrête la tempo manuellement. |
 
 ---
