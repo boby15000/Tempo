@@ -3,7 +3,7 @@
  * @author Nicolas Fourgheon
  * @page https://github.com/boby15000/Tempo
  * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
- * @version v1.6.0
+ * @version v1.6.1
  * @date 2023-05-24
  */
 
@@ -90,13 +90,13 @@ class Tempo
          * @brief Vérifie si la tempo est active (en cours de décompte).
          * @return true si la tempo est active.
          */
-        bool IsStart();
+        bool IsStart() const;
 
         /**
          * @brief Vérifie si la tempo est en pause.
          * @return true si la tempo est en pause.
          */
-        bool IsPause();
+        bool IsPause() const;
 
         /**
          * @brief Vérifie si la tempo est terminée (et met à jour son état).
@@ -106,7 +106,9 @@ class Tempo
 
         /**
          * @brief Retourne le temps restant avant la fin de la tempo.
-         * @return Temps restant (en millisecondes ou selon l’unité choisie).
+         * @return Temps restant, toujours en unité interne : millisecondes, ou
+         *         microsecondes si la tempo a été initialisée avec Tempo::MICRO
+         *         (jamais dans l’unité d’origine SECONDE/MINUTE/HEURE).
          */
         unsigned long GetTime();
 
@@ -114,25 +116,38 @@ class Tempo
         Callback onEndCallback = nullptr; ///< Fonction callback appelée à la fin de la tempo.
 
         /**
+         * @brief États possibles d’une tempo.
+         */
+        enum class State : uint8_t {
+            IDLE,    ///< Jamais démarrée, ou arrêtée via Stop().
+            RUNNING, ///< En cours de décompte.
+            PAUSED,  ///< En pause, temps restant conservé.
+            EXPIRED  ///< Décompte terminé.
+        };
+
+        /**
          * @brief Convertit la durée selon l’unité spécifiée en millisecondes ou microsecondes.
          * @param unite Unité de temps.
          * @param seuil Durée à convertir.
          * @return Durée convertie en unités internes (millis ou micros).
          */
-        unsigned long ConversionUnite(BaseTemps unite, unsigned long seuil);
+        unsigned long ConversionUnite(BaseTemps unite, unsigned long seuil) const;
+
+        /**
+         * @brief Horodatage courant dans l’unité interne de la tempo (micros() ou millis()).
+         */
+        unsigned long Now() const;
 
         /**
          * @brief Structure interne contenant les données de la tempo.
          */
         struct TempoData {
-            bool actif;               ///< Indique si la tempo est active.
-            unsigned long seuil;     ///< Durée initiale convertie.
-            BaseTemps unite;         ///< Unité de temps utilisée.
-            unsigned long depart;    ///< Timestamp de départ.
-            bool fini;               ///< Indique si la tempo est terminée.
-            unsigned long restant;   ///< Temps restant.
-            unsigned long pauseSeuil;///< Sauvegarde du seuil en cas de pause.
-            bool autoRestart = false;///< Si vrai, redémarre automatiquement.
+            State state = State::IDLE;         ///< État courant de la tempo.
+            unsigned long duration = 0;        ///< Durée configurée (unité interne), immuable hors reconfiguration.
+            BaseTemps unite = MICRO;           ///< Unité de temps utilisée.
+            unsigned long depart = 0;          ///< Timestamp de départ, valide si state == RUNNING.
+            unsigned long remainingAtPause = 0;///< Temps restant figé, valide si state == PAUSED.
+            bool autoRestart = false;          ///< Si vrai, redémarre automatiquement.
         };
 
         TempoData tempo; ///< Données internes de la tempo.
