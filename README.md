@@ -106,7 +106,7 @@ Tempo::HEURE
 
 ## 📜 Changelog
 
-### v1.6.1
+### v1.7.0
 Refonte interne de la classe `Tempo` : l'état (actif / en pause / terminé) est désormais représenté par une machine à états explicite au lieu de plusieurs champs booléens combinés, ce qui corrige plusieurs bugs latents. **Aucun changement de l'API publique** — le comportement observable reste identique, hormis les corrections ci-dessous.
 
 Corrections :

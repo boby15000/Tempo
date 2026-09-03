@@ -1,6 +1,6 @@
 {
     "name": "Tempo",
-    "version": "1.6.1",
+    "version": "1.7.0",
     "description": "Bibliothèque Arduino pour créer des temporisations non bloquantes avec gestion des unités de temps (micro, millisecondes, secondes, minutes, heures). Possibilité de Pause, Restart et ajout de CallBack",
     "keywords": [
       "timer",
