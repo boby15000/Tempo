@@ -67,7 +67,7 @@ void loop() {
 | `Start(valeur, unité, autoRestart)`  | Démarre la temporisation. |
 | `Update()`                    | À appeler régulièrement dans `loop()` pour que la tempo fonctionne *(Inutile si IsEnd() ou GetTime() utilisé)*. |
 | `OnEnd(callback)`             | Définit une fonction à appeler à la fin de la Tempo. |
-| `IsRunning()`                 | Renvoie `true` si la tempo est en cours. |
+| `IsStart()`                   | Renvoie `true` si la tempo est en cours. |
 | `IsEnd()`                     | Renvoie `true` si la tempo est en terminé. |
 | `GetTime()`                   | Renvoie le temps restant en Millis ou Micro selon l'unité utilisé. |
 | `Stop()`                      | Arrête la tempo manuellement. |
@@ -101,6 +101,20 @@ Tempo::HEURE
 - ATtiny85 
 - ESP8266, ESP32
 - Arduino Mega
+
+---
+
+## 📜 Changelog
+
+### v1.6.1
+Refonte interne de la classe `Tempo` : l'état (actif / en pause / terminé) est désormais représenté par une machine à états explicite au lieu de plusieurs champs booléens combinés, ce qui corrige plusieurs bugs latents. **Aucun changement de l'API publique** — le comportement observable reste identique, hormis les corrections ci-dessous.
+
+Corrections :
+- `Start()` appelé sans argument pour reprendre après une `Pause()` n'écrase plus silencieusement l'option `autoRestart`.
+- `Pause()` ne peut plus produire une valeur aberrante (dépassement arithmétique) si elle est appelée juste après l'expiration réelle de la tempo.
+- `GetTime()` ne renvoie plus une valeur obsolète pendant une pause.
+- Les champs internes de la tempo sont désormais toujours initialisés, y compris pour une instance `Tempo` locale (pas seulement globale).
+- Documentation corrigée : `GetTime()` renvoie toujours le temps restant en millisecondes (ou microsecondes si l'unité `MICRO` est utilisée), jamais dans l'unité d'origine (secondes/minutes/heures) ; le tableau des méthodes mentionnait par erreur `IsRunning()` au lieu de `IsStart()`.
 
 ---
 
